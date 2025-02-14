@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Checkout</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        .checkout-container {
+            text-align: center;
+            position: relative;
+        }
+
+        .checkout-btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            background-color: #ff6b00;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 0, 0.3);
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 0, 0.4);
+        }
+
+        .animation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cart-icon, .box-icon, .check-icon {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            fill: #ff6b00;
+            opacity: 0;
+        }
+
+        .processing-text {
+            color: #ff6b00;
+            font-size: 24px;
+            opacity: 0;
+            margin-top: 100px;
+        }
+
+        .success-text {
+            color: #4CAF50;
+            font-size: 28px;
+            font-weight: bold;
+            opacity: 0;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-btn {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+
+            .cart-icon, .box-icon, .check-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .processing-text {
+                font-size: 20px;
+            }
+
+            .success-text {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <button class="checkout-btn">Checkout</button>
+    </div>
+
+    <div class="animation-container">
+        <svg class="cart-icon" viewBox="0 0 24 24">
+            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+        </svg>
+        <svg class="box-icon" viewBox="0 0 24 24">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/>
+            <path d="M12 16l4-4h-3V8h-2v4H8z"/>
+        </svg>
+        <svg class="check-icon" viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+        <div class="processing-text">Processing your order...</div>
+        <div class="success-text">Checkout Successful!</div>
+    </div>
+
+    <script>
+        document.querySelector('.checkout-btn').addEventListener('click', startCheckoutAnimation);
+
+        function startCheckoutAnimation() {
+            const animContainer = document.querySelector('.animation-container');
+            const cartIcon = document.querySelector('.cart-icon');
+            const boxIcon = document.querySelector('.box-icon');
+            const checkIcon = document.querySelector('.check-icon');
+            const processingText = document.querySelector('.processing-text');
+            const successText = document.querySelector('.success-text');
+
+            // Show animation container
+            animContainer.style.display = 'flex';
+
+            // Timeline for the checkout animation
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    setTimeout(() => {
+                        gsap.to(animContainer, {
+                            opacity: 0,
+                            duration: 0.5,
+                            onComplete: () => {
+                                animContainer.style.display = 'none';
+                                // Reset animations
+                                gsap.set([cartIcon, boxIcon, checkIcon, processingText, successText], {
+                                    clearProps: "all"
+                                });
+                            }
+                        });
+                    }, 1500);
+                }
+            });
+
+            // Animation sequence
+            tl.to(cartIcon, {
+                opacity: 1,
+                duration: 0.5
+            })
+            .to(cartIcon, {
+                x: 100,
+                y: -50,
+                rotation: 360,
+                duration: 1,
+                ease: "power2.inOut"
+            })
+            .to(boxIcon, {
+                opacity: 1,
+                duration: 0.5
+            }, "-=0.5")
+            .to(processingText, {
+                opacity: 1,
+                duration: 0.5
+            }, "-=0.5")
+            .to(cartIcon, {
+                scale: 0.5,
+                opacity: 0,
+                duration: 0.5
+            })
+            .to(boxIcon, {
+                scale: 1.2,
+                duration: 0.3
+            })
+            .to(boxIcon, {
+                scale: 1,
+                duration: 0.3
+            })
+            .to(boxIcon, {
+                y: 20,
+                rotation: 360,
+                duration: 0.5
+            })
+            .to([boxIcon, processingText], {
+                opacity: 0,
+                duration: 0.3
+            })
+            .to(checkIcon, {
+                opacity: 1,
+                scale: 1.5,
+                duration: 0.5
+            })
+            .to(checkIcon, {
+                scale: 1,
+                duration: 0.3
+            })
+            .to(successText, {
+                opacity: 1,
+                y: 20,
+                duration: 0.5
+            }, "-=0.3");
+        }
+    </script>
+</body>
+</html>
