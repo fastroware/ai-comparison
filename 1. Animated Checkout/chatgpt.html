@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Animation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ff8c00;
+        }
+        .container {
+            text-align: center;
+            position: relative;
+        }
+        .checkout-btn {
+            background-color: #fff;
+            color: #ff8c00;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+        .checkout-btn:hover {
+            transform: scale(1.1);
+        }
+        .animation-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin-top: 20px;
+            display: none;
+        }
+        .basket {
+            width: 50px;
+            height: 40px;
+            background-color: #fff;
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .basket::before {
+            content: "";
+            width: 60px;
+            height: 10px;
+            background-color: #fff;
+            position: absolute;
+            top: -10px;
+            left: -5px;
+            border-radius: 5px;
+        }
+        .box {
+            width: 80px;
+            height: 50px;
+            background-color: #fff;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .loading {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255, 255, 255, 0.3);
+            border-top: 6px solid white;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(0deg);
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        @keyframes spin {
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .success {
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="checkout-btn">Checkout</button>
+    <div class="animation-container">
+        <div class="basket"></div>
+        <div class="box"></div>
+        <div class="loading"></div>
+        <div class="success">Checkout Successful!</div>
+    </div>
+</div>
+
+<script>
+    document.querySelector(".checkout-btn").addEventListener("click", function() {
+        let btn = this;
+        let animContainer = document.querySelector(".animation-container");
+        let basket = document.querySelector(".basket");
+        let box = document.querySelector(".box");
+        let loading = document.querySelector(".loading");
+        let success = document.querySelector(".success");
+
+        // Hide button and show animation area
+        btn.style.display = "none";
+        animContainer.style.display = "block";
+
+        // Move basket into the box
+        gsap.to(basket, { y: 40, duration: 0.8, ease: "power2.inOut" });
+
+        // Close the box slightly
+        setTimeout(() => {
+            gsap.to(box, { scaleY: 1.1, duration: 0.2, yoyo: true, repeat: 1 });
+        }, 800);
+
+        // Show loading spinner
+        setTimeout(() => {
+            basket.style.display = "none";
+            loading.style.display = "block";
+
+            setTimeout(() => {
+                loading.style.display = "none";
+                success.style.display = "block";
+
+                // Reset animation after 2 seconds
+                setTimeout(() => {
+                    animContainer.style.display = "none";
+                    btn.style.display = "block";
+                    basket.style.display = "block";
+                    success.style.display = "none";
+                }, 2000);
+            }, 2000);
+        }, 1000);
+    });
+</script>
+
+</body>
+</html>
